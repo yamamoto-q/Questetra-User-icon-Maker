@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Questetra User-icon Maker</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="farbtastic/farbtastic.css" type="text/css" />
+    <link rel="icon" href="icon.png">
+    <style>
+    @font-face {
+        font-family: 'flop';
+        src: url('font/FlopDesignFONT.otf') format('opentype');
+    }
+    
+    body {
+        font-family: 'flop';
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12  col-sm-12  col-md-12  col-lg-12  col-xl-12">
+                <h1>Questetra User-icon Maker<h1>
+          </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12  col-sm-12  col-md-4  col-lg-3  col-xl-3">
+                <canvas id="canvas" width="72" height="72"></canvas>
+              <div class="form-group">
+                <label for="name">名前</label>
+                <textarea class="form-control" id="name" rows="3">Questeera</textarea>
+              </div>
+            </div>
+            <div class="col-xs-12  col-sm-6  col-md-4  col-lg-3  col-xl-3">
+            <h5>背景色</h5>
+            <div id="pickerBG"></div>
+            </div>
+            <div class="col-xs-12  col-sm-6  col-md-4  col-lg-3  col-xl-3">
+            <h5>文字色</h5>
+            <div id="pickerFont"></div>
+            </div>
+          <div class="col-xs-12  col-sm-12  col-md-12  col-lg-3 col-xl-3">
+            <a class="dl btn btn-primary">ダウンロード</a>
+          </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="farbtastic/farbtastic.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.3.7/js/tether.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+    (function($) {
+        $(document).ready(function() {
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+            ctx.textAlign = "center";
+
+            var bgColor = "#009900";
+            var fontColor = "#FFFFFF";
+
+            var cp1 = $.farbtastic('#pickerBG');
+            cp1.setColor(bgColor);
+            cp1.linkTo(function(color) {
+                bgColor = color;
+                draw();
+            });
+            
+            var cp2 = $.farbtastic('#pickerFont');
+            cp2.setColor(fontColor);
+            cp2.linkTo(function(color) {
+                fontColor = color;
+                draw();
+            });
+
+            $('#name').change(function(event) {
+                draw();
+            });
+            $('#name').keyup(function(event) {
+                draw();
+            });
+
+            // draw
+            function fillTextLine(context, text, x, y) {
+              ctx.fillStyle = fontColor;
+              ctx.textBaseline = "middle";
+                var textList = text.split('\n');
+
+                var widthWhen18 = 0;
+                ctx.font = "18px 'flop'";
+                textList.forEach(function(text, i) {
+                    var rowW = context.measureText(text).width;
+                    if (widthWhen18 < rowW) {
+                        widthWhen18 = rowW;
+                    }
+                });
+
+                var heightWhen18 = textList.length * 18;
+
+                var containSizeW = Math.round((72 * 0.8) / widthWhen18 * 18);
+                var containSizeH = Math.round((72 * 0.8) / heightWhen18 * 18);
+                var containSize = containSizeW;
+                if (containSize > containSizeH) {
+                    containSize = containSizeH;
+                }
+                ctx.font = containSize + "px 'flop'";
+
+                var sy = 36 - ((containSize * textList.length) / 2) + containSize / 2;
+
+                textList.forEach(function(text, i) {
+                    context.fillText(text, x, sy + i * containSize);
+                });
+            };
+
+            function draw() {
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(0, 0, 72, 72);
+
+                var text = $('#name').val();
+                fillTextLine(ctx, text, 36, 36);
+                //ctx.fillText(text, 36, 36);
+
+                var img = canvas.toDataURL("image/png");
+                var dlImg = img.replace(/^data:image\/png/, "data:application/octet-stream");
+                $(".dl").attr("download", "myIcon.png").attr("href", dlImg);
+            }
+
+            draw();
+        });
+    })(window.jQuery);
+    </script>
+</body>
+
+</html>
